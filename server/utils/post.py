@@ -31,13 +31,13 @@ async def get_post_list(session: Session):
         "title": post.title,
         "content": post.content,
         "username": post.username,
-        "created_at": post.create_at
+        "created_at": post.created_at
     } for post in posts]}
 
 
 async def see_more_post(post_id: int, session: Session):
-    post = session.query(Post).filter(Post.post_id == post_id)
-    comments = session.query(Comment).filter(Comment.post_id == post_id).all
+    post = session.query(Post).filter(Post.id == post_id).first()
+    comments = session.query(Comment).filter(Comment.post_id == post_id).all()
 
     return {
         "title": post.title,

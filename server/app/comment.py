@@ -15,26 +15,26 @@ async def write_comment(body: Comment, post_id: int, settings: Settings = Depend
     with session_scope(settings.MYSQL_DB_URL) as session:
         token_check(authorize=authorize, type="access")
         username = authorize.get_jwt_subject()
-        response = create_comment(post_id=post_id, contnent=body.content, username=username, session=session)
+        response = await create_comment(post_id=post_id, content=body.content, username=username, session=session)
 
         return response
 
 
-@app.put("/{post_id}", status_code=status.HTTP_201_CREATED)
-async def update_comment(post_id: int, body: Comment, setting: Settings = Depends(get_settings), authorize: AuthJWT = Depends()):
+@app.put("/{comment_id}", status_code=status.HTTP_201_CREATED)
+async def update_comment(comment_id: int, body: Comment, setting: Settings = Depends(get_settings), authorize: AuthJWT = Depends()):
     with session_scope(setting.MYSQL_DB_URL) as session:
         token_check(authorize=authorize, type="access")
         username = authorize.get_jwt_subject()
 
-        return edit_comment(content=body.content, post_id=post_id, username=username, session=session)
+        return await edit_comment(comment_id=comment_id, content=body.content, username=username, session=session)
 
 
-@app.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_comment(post_id: int, settings: Settings = Depends(get_settings), authorize: AuthJWT = Depends()):
+@app.delete("/{comment_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def deletes_comment(comment_id: int, settings: Settings = Depends(get_settings), authorize: AuthJWT = Depends()):
     with session_scope(settings.MYSQL_DB_URL) as session:
         token_check(authorize=authorize, type="access")
         username = authorize.get_jwt_subject()
-        response = delete_comment(post_id=post_id, username=username, session=session)
+        response = await delete_comment(comment_id=comment_id, username=username, session=session)
         return response
 
 

@@ -29,7 +29,7 @@ async def get_post(post_id: int, settings: Settings = Depends(get_settings)):
 @app.get("", status_code=status.HTTP_200_OK)
 async def all_get_post(settings: Settings = Depends(get_settings)):
     with session_scope(settings.MYSQL_DB_URL) as session:
-        return get_post_list(session=session)
+        return await get_post_list(session=session)
 
 
 @app.put("/{post_id}", status_code=status.HTTP_201_CREATED)
@@ -38,16 +38,16 @@ async def update_post(post_id: int, body: Post, setting: Settings = Depends(get_
         token_check(authorize=authorize, type="access")
         username = authorize.get_jwt_subject()
 
-        return edit_post(title=body.title, content=body.content, post_id=post_id, username=username, session=session)
+        return await edit_post(title=body.title, content=body.content, post_id=post_id, username=username, session=session)
 
 
 @app.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_post(post_id: int, settings: Settings = Depends(get_settings), authorize: AuthJWT = Depends()):
+async def delete_posts(post_id: int, settings: Settings = Depends(get_settings), authorize: AuthJWT = Depends()):
     with session_scope(settings.MYSQL_DB_URL) as session:
         token_check(authorize=authorize, type="access")
         username = authorize.get_jwt_subject()
 
-        return delete_post(post_id=post_id, username=username, session=session)
+        return await delete_post(post_id=post_id, username=username, session=session)
 
 
 

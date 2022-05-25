@@ -49,12 +49,10 @@ def token_check(authorize: AuthJWT, type: str):
 
 
 def check_post(username: str, post_id: int, session: Session):
-    post = session.query(Post).filter(Post.post_id == post_id).scalar()
+    post = session.query(Post).filter(Post.id == post_id).first()
 
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="this post is not found")
-
-    post = post.first()
 
     if post.username == username or username == "admin":
         return post
@@ -63,12 +61,10 @@ def check_post(username: str, post_id: int, session: Session):
 
 
 def check_comment(username: str, comment_id: int, session: Session):
-    comment = session.query(Comment).filter(Comment.comment_id == comment_id).scalar()
+    comment = session.query(Comment).filter(Comment.id == comment_id).scalar()
 
     if not comment:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="this comment is not found")
-
-    comment.first()
 
     if comment.username == username or username == "admin":
         return comment
@@ -92,4 +88,5 @@ def token_check(authorize: AuthJWT, type: str):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="refresh token required")
     except JWTDecodeError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="token has expired")
-
+    except MissingTokenError:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="token not found")
